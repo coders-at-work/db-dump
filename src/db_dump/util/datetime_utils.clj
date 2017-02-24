@@ -1,4 +1,4 @@
-(ns db-dump.datetime-utils
+(ns db-dump.util.datetime-utils
   (:require [clj-time.coerce :refer (to-date-time to-sql-time)]
             [clj-time.format :refer (parse)]))
 
