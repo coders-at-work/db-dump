@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ladybird "0.5.3-SNAPSHOT"]
                  [clj-time "0.11.0"]
+                 [com.twitter/carbonite "1.5.0"]
                  ]
   :profiles {:dev {:dependencies [[local.repo/sqljdbc "4.2"]
                                   ]
