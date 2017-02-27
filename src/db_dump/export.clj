@@ -10,7 +10,7 @@
   ([table-name condition]
    (let [tb-name (name table-name)]
      {:dict {:table-name tb-name}
-      :data (query tb-name condition)
+      :rows (query tb-name condition)
       }
      )
    )
