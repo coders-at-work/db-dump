@@ -1,5 +1,8 @@
 (ns db-dump.export
-  (:require [ladybird.data.core :refer (query)]))
+  (:require [ladybird.data.core :refer (query)]
+            [clojure.java.io :refer (file)]
+            [csk.core :refer (write-to)]
+            ))
 
 (defn export-table
   ([table-name]
@@ -10,6 +13,14 @@
       :data (query tb-name condition)
       }
      )
+   )
+  )
+
+(defn export-table-to-file
+  ([dir table-name]
+   (export-table-to-file dir table-name nil))
+  ([dir table-name condition]
+   (write-to (file dir (name table-name)) (export-table table-name condition))
    )
   )
 

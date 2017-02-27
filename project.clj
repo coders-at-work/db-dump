@@ -4,9 +4,10 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [ladybird "0.5.3-SNAPSHOT"]
                  [clj-time "0.11.0"]
-                 [com.twitter/carbonite "1.5.0"]
+                 [me.raynes/fs "1.4.6"]
+                 [coders-at-work/ladybird "0.5.3-SNAPSHOT"]
+                 [coders-at-work/csk "0.1.0-SNAPSHOT"]
                  ]
   :profiles {:dev {:dependencies [[local.repo/sqljdbc "4.2"]
                                   ]
