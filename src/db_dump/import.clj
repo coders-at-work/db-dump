@@ -7,19 +7,35 @@
             [ladybird.db.core :as db]
             [ladybird.db.transaction :refer (do-tx)]
             [korma.core :refer (exec-raw)]
+            [korma.db :as kdb]
+            [clojure.java.jdbc :as jdbc]
             )
   )
 
 ; TODO extract set identity insert on/off function, how about database other then mssql?
 ; TODO refacto exec-raw to ladybird?
 (defn enable-insert-into-identity [db-conn table-name]
-  (exec-raw db-conn (format "SET IDENTITY_INSERT %s ON" (name table-name)))
+  ; (exec-raw db-conn (format "SET IDENTITY_INSERT %s ON" (name table-name)))
+  ; (let [conn kdb/*current-conn*
+  ;       st (.createStatement conn)]
+    ; (println :on-conn conn)
+    ; (.execute st (format "SET IDENTITY_INSERT %s ON" (name table-name)))
+
+    ; )
+    (jdbc/db-do-commands db-conn (format "SET IDENTITY_INSERT %s ON" (name table-name)))
   (println :ON)
   )
 
 ; TODO extract set identity insert on/off function, how about database other then mssql?
 (defn disable-insert-into-identity [db-conn table-name]
-  (exec-raw db-conn (format "SET IDENTITY_INSERT %s OFF" (name table-name)))
+  ; (exec-raw db-conn (format "SET IDENTITY_INSERT %s OFF" (name table-name)))
+  ; (let [conn kdb/*current-conn*
+  ;       st (.createStatement conn)]
+  ;   (println :off-conn conn)
+  ;   (.execute st (format "SET IDENTITY_INSERT %s OFF" (name table-name)))
+  ;   )
+
+    (jdbc/db-do-commands db-conn (format "SET IDENTITY_INSERT %s ON" (name table-name)))
   (println :OFF)
   )
 
@@ -32,7 +48,7 @@
 ; TODO how to detect version row
 (defn update-row [table-name {:keys [id] :as row}]
   (log/debug "updating record of id" id)
-  (modify! (make (= :id id)) (:dissoc row :id))
+  (modify! table-name (make (= :id id)) (dissoc row :id :version))
   )
 
 (defn import-table-from-file [dir file-name]
@@ -44,7 +60,7 @@
     (when (pos? row-count)
       (let [db-conn (db/get-cur-db-conn)]
         (do-tx db-conn
-               (enable-insert-into-identity db-conn table-name)
+               (enable-insert-into-identity kdb/*current-conn* table-name)
                (doseq [{:keys [id ] :as row} rows]
                  (if-let [db-row (first (query table-name (make (= :id id))))]
                    (update-row table-name row)
@@ -52,7 +68,7 @@
                    )
                  )
                ; (exec-raw (db/get-cur-db-conn) "insert into cms_control (id, user_id, name, value ,create_time, last_update) values (10, 1, 'E', 'E', current_timestamp, current_timestamp);" :results)
-               (disable-insert-into-identity db-conn table-name)
+               (disable-insert-into-identity kdb/*current-conn* table-name)
                )
         )
       )
