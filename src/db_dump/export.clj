@@ -24,9 +24,30 @@
    )
   )
 
+(defn export-table-tree-to-file
+  [dir root-table condition table-rel-def])
+
 #_(defn export-data [data tagger]
     (tagger data)
     )
+
+; (gen-export-fn spec)
+; (export-fn dir :benefit condition {:benefit {:table-name "benefit"
+;                                              :children {:benefit-detail-1 {:fk :benefit-id :ref :id}
+;                                                         :benefit-card-type {:fk :benefit-id}}
+;                                    :benefit-detal-1 {:table-name "benefit_detail"}
+;                                    :benefit-card-type nil }})
+
+;                                              [{:table :benefit
+;                                               :parent nil
+;                                               }
+;                                               {:table :benefit-detail
+;                                                :parent :benefit
+;                                                :fk :benefit-id
+;                                                :
+;                                                }
+;                                               ]
+
 
 ; (defn export-table-tree [parent parent-condition [{:table-name :a :fk-name :p-id :ref :id} [b c]]]
 
