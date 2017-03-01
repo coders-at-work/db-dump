@@ -63,6 +63,7 @@
       {:table :benefit_detail
        :parent :benefit
        :fk :benefit_id
+       :ref :id
       }
      ]
     Parent table must be prior to child table.
