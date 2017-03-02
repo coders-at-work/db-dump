@@ -18,7 +18,7 @@
 
 ; TODO extract set identity insert on/off function, how about database other then mssql?
 (defn disable-insert-into-identity [db-conn table-name]
-  (jdbc/db-do-commands db-conn (format "SET IDENTITY_INSERT %s ON" (name table-name)))
+  (jdbc/db-do-commands db-conn (format "SET IDENTITY_INSERT %s OFF" (name table-name)))
   )
 
 ; TODO how do we know which column is rowversion data type
