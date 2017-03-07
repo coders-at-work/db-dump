@@ -52,21 +52,20 @@
   [dir table condition]
   (export-parent (partial export-table-to-file dir) table condition))
 
-
 (defn export-table-tree-to-file
   "
-   table-rel-def should be:
-     [
-      {:table :benefit
-       :parent nil
-      }
-      {:table :benefit_detail
-       :parent :benefit
-       :fk :benefit_id
-       :ref :id
-      }
-     ]
-    Parent table must be prior to child table.
+  table-rel-def should be:
+  [
+  {:table :benefit
+  :parent nil
+  }
+  {:table :benefit_detail
+  :parent :benefit
+  :fk :benefit_id
+  :ref :id
+  }
+  ]
+  Parent table must be prior to child table.
   "
   [dir [parent-table-def & children-table-def :as table-rel-def] condition]
   (let [{:keys [table]} parent-table-def
@@ -75,9 +74,10 @@
     (loop [parent-data-m {table (:rows data)}
            children-table-def children-table-def
            ]
-          (when-let [{:keys [parent] :as table-def} (first children-table-def)]
-                    (let [m (->> (export-child-to-file dir (parent-data-m table) table-def)
-                                 :rows
-                                 (assoc parent-data-m parent))]
-                      (recur m  (rest children-table-def)))))))
+      (if-let [{:keys [table parent] :as table-def} (first children-table-def)]
+        (let [m (->> (export-child-to-file dir (parent-data-m parent) table-def)
+                     :rows
+                     (assoc parent-data-m table))]
+          (recur m  (rest children-table-def)))
+        (mapv (fn [[table rows]] {:table table :row-count (count rows)}) parent-data-m)))))
 
