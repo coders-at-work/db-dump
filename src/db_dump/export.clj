@@ -20,9 +20,11 @@
   ([dir table-name]
    (export-table-to-file dir table-name nil))
   ([dir table-name condition]
+   (export-table-to-file dir (name table-name) table-name condition))
+  ([dir file-name table-name condition]
    (let [data (export-table table-name condition)]
-     (write-to (file dir (name table-name)) data)
-     data)))
+     (write-to (file dir file-name) data)
+     (assoc data :file-name file-name))))
 
 (defn make-child-condition [parent-recs {:keys [fk ref] :as child-def}]
   (->> parent-recs (map #(ref %)) (list 'in fk)))
@@ -71,13 +73,14 @@
   (let [{:keys [table]} parent-table-def
         data (export-parent-to-file dir table condition)
         ]
-    (loop [parent-data-m {table (:rows data)}
+    (loop [parent-data-m {table data}
            children-table-def children-table-def
            ]
       (if-let [{:keys [table parent] :as table-def} (first children-table-def)]
-        (let [m (->> (export-child-to-file dir (parent-data-m parent) table-def)
-                     :rows
-                     (assoc parent-data-m table))]
-          (recur m  (rest children-table-def)))
-        (mapv (fn [[table rows]] {:table table :row-count (count rows)}) parent-data-m)))))
+        (let [rows (:rows (parent-data-m parent))
+              m (export-child-to-file dir rows table-def)
+              m (assoc parent-data-m table m)
+              ]
+          (recur m (rest children-table-def)))
+        (mapv (fn [[table {:keys [rows file-name]}]] {:table table :row-count (count rows) :file-name file-name}) parent-data-m)))))
 
