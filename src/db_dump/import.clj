@@ -41,14 +41,18 @@
     (when (pos? row-count)
       (let [db-conn (db/get-cur-db-conn)]
         (do-tx db-conn
-               (enable-insert-into-identity kdb/*current-conn* table-name)
-               (doseq [{:keys [id ] :as row} rows]
-                 (if-let [db-row (first (query table-name (make (= :id id))))]
-                   (update-row table-name row)
-                   (insert-row table-name row)
+               (try
+                 (enable-insert-into-identity kdb/*current-conn* table-name)
+                 (doseq [{:keys [id ] :as row} rows]
+                   (if-let [db-row (first (query table-name (make (= :id id))))]
+                     (update-row table-name row)
+                     (insert-row table-name row)
+                     )
+                   )
+                 (finally
+                   (disable-insert-into-identity kdb/*current-conn* table-name)
                    )
                  )
-               (disable-insert-into-identity kdb/*current-conn* table-name)
                )
         )
       )
